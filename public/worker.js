@@ -12,7 +12,7 @@ self.onmessage = function(event) {
   var result = [];
 
   for (var i = 0; i <  Math.pow(10, length); i++) {
-    result.push(start + zeroPad(length) + end);
+    result.push(start + zeroPad(i, length) + end);
   }
   self.postMessage(result);
 }
