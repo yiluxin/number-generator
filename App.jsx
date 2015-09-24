@@ -31,23 +31,22 @@ App = React.createClass({
   },
 
   generate() {
-    function zeroPad(number, width) {
-      var string = String(number);
-      while (string.length < width)
-        string = "0" + string;
-      return string;
-    }
 
+    let worker = new Worker('worker.js');
     let middleLength = maxLength - this.state.startNumber.length - this.state.endNumber.length;
-    let generatedNumbers = [];
 
-    for (let i = 0; i < Math.pow(10, middleLength); i++) {
-      generatedNumbers.push(this.state.startNumber + zeroPad(i, middleLength) + this.state.endNumber);
+    worker.onmessage = (event) => {
+      this.setState({
+        generatedNumbers: event.data
+      });
     }
 
-    this.setState({
-      generatedNumbers: generatedNumbers
+    worker.postMessage({
+      start: this.state.startNumber,
+      end: this.state.endNumber,
+      length: middleLength
     });
+
   },
 
   startNumberMaxLength() {
@@ -116,6 +115,6 @@ App = React.createClass({
         }
 
       </div>
-                                 )
+    )
   }
 });
