@@ -46,6 +46,8 @@ mobile-status-bar@1.0.6
 mongo@1.1.1
 mongo-id@1.0.1
 netanelgilad:excel@0.2.4
+netanelgilad:mkdirp@0.0.1
+netanelgilad:node-uuid@1.0.2
 npm-mongo@1.4.39_1
 observe-sequence@1.0.7
 ordered-dict@1.0.4
@@ -71,5 +73,6 @@ tracker@1.0.8
 ui@1.0.8
 underscore@1.0.4
 url@1.0.5
+vsivsi:file-collection@1.2.0
 webapp@1.2.2
 webapp-hashing@1.0.5
