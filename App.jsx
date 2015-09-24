@@ -6,7 +6,8 @@ App = React.createClass({
     return {
       startNumber: '',
       endNumber: '',
-      generatedNumbers: []
+      generatedNumbers: [],
+      isGenerating: false
     }
   },
 
@@ -37,9 +38,14 @@ App = React.createClass({
 
     worker.onmessage = (event) => {
       this.setState({
-        generatedNumbers: event.data
+        generatedNumbers: event.data,
+        isGenerating: false
       });
     }
+
+    this.setState({
+      isGenerating: true
+    });
 
     worker.postMessage({
       start: this.state.startNumber,
@@ -67,6 +73,14 @@ App = React.createClass({
     return this.state.endNumber.length < 3 ?
       '至少还需要输入' + (3 - this.state.endNumber.length) + '位数字' :
       '还能输入' + (this.endNumberMaxLength() - this.state.endNumber.length) + '位数字';
+  },
+
+  showNumbers() {
+    return this.state.generatedNumbers.length > 0 ?
+      <div className="result">
+        <textarea className="generated-numbers" readOnly={true} rows="5" placeholder="还未生成号码" value={this.state.generatedNumbers.join('\n')}></textarea>
+        <span>共生成{this.state.generatedNumbers.length}个号码</span>
+      </div> : ''
   },
 
   render() {
@@ -107,12 +121,10 @@ App = React.createClass({
 
         <br />
 
-        { this.state.generatedNumbers.length > 0 ?
-          <div className="result">
-            <textarea className="generated-numbers" readOnly={true} rows="5" placeholder="还未生成号码" value={this.state.generatedNumbers.join('\n')}></textarea>
-            <span>共生成{this.state.generatedNumbers.length}个号码</span>
-          </div> : ''
+        { this.state.isGenerating ?
+          <span>工人正在生成号码，请稍等</span> : this.showNumbers()
         }
+
 
       </div>
     )
