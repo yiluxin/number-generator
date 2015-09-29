@@ -75,25 +75,12 @@ App = React.createClass({
       '还能输入' + (this.endNumberMaxLength() - this.state.endNumber.length) + '位数字';
   },
 
-  exportToExcel(event) {
-    Meteor.call('downloadExcelFile', this.state.generatedNumbers, (err, fileUrl) => {
-      if (err) {
-        console.log(err);
-      } else {
-        var link = document.createElement("a");
-        link.download = '生成号码.xlsx';
-        link.href = fileUrl;
-        link.click();
-      }
-    });
-  },
-
   showNumbers() {
     return this.state.generatedNumbers.length > 0 ?
       <div className="result">
         <textarea className="generated-numbers" readOnly={true} rows="5" placeholder="还未生成号码" value={this.state.generatedNumbers.join('\n')}></textarea>
         <span>共生成{this.state.generatedNumbers.length}个号码</span>
-        <button className="export-to-excel" onClick={this.exportToExcel}>导出</button>
+        <button className="export-to-excel">导出通讯录</button>
       </div> : ''
   },
 
