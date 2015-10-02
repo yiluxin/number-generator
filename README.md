@@ -1,4 +1,4 @@
 # Number Generator
 
-A number generator, built with Meteor and React.
+A number generator, built with Meteor, Cordova and React.
 
