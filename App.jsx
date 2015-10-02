@@ -5,10 +5,13 @@ App = React.createClass({
   getInitialState() {
     return {
       startNumber: '',
-      endNumber: '',
-      generatedNumbers: [],
-      isGenerating: false
+      endNumber: ''
     }
+  },
+
+  componentWillMount() {
+    let numberPairs = window.localStorage.getItem('numberPairs');
+    this.setState({ numberPairs: JSON.parse(numberPairs) });
   },
 
   setStartNumber(event) {
@@ -31,30 +34,6 @@ App = React.createClass({
     });
   },
 
-  generate() {
-
-    let worker = new Worker('worker.js');
-    let middleLength = maxLength - this.state.startNumber.length - this.state.endNumber.length;
-
-    worker.onmessage = (event) => {
-      this.setState({
-        generatedNumbers: event.data,
-        isGenerating: false
-      });
-    }
-
-    this.setState({
-      isGenerating: true
-    });
-
-    worker.postMessage({
-      start: this.state.startNumber,
-      end: this.state.endNumber,
-      length: middleLength
-    });
-
-  },
-
   startNumberMaxLength() {
     return this.state.endNumber.length < 3 ? maxLength - 3 : maxLength - this.state.endNumber.length;
   },
@@ -75,18 +54,41 @@ App = React.createClass({
       '还能输入' + (this.endNumberMaxLength() - this.state.endNumber.length) + '位数字';
   },
 
-  showNumbers() {
-    return this.state.generatedNumbers.length > 0 ?
-      <div className="result">
-        <textarea className="generated-numbers" readOnly={true} rows="5" placeholder="还未生成号码" value={this.state.generatedNumbers.join('\n')}></textarea>
-        <span>共生成{this.state.generatedNumbers.length}个号码</span>
-        <button className="export-to-excel">导出通讯录</button>
-      </div> : ''
+  showNumberPairs() {
+    return this.state.numberPairs.map(numberPair => {
+      let {start, end} = numberPair;
+      let middle = 'x'.repeat(maxLength - start.length - end.length);
+      let result = start + middle + end;
+      return <li key={result}>{result}</li>
+    });
+  },
+
+  exportToContacts() {
+    // 更新numberPairs (state & localStorage)
+    let nextNumberPairs = this.state.numberPairs.concat({start: this.state.startNumber, end: this.state.endNumber})
+    this.setState({ numberPairs: nextNumberPairs });
+    window.localStorage.setItem('numberPairs', JSON.stringify(nextNumberPairs));
+    
+  },
+
+  numberPairHasBeenExported() {
+    return this.state.numberPairs.some(numberPair => {
+      return this.state.startNumber === numberPair.start && this.state.endNumber === numberPair.end;
+    });
   },
 
   render() {
     return (
       <div className="container">
+        {this.state.numberPairs ? (
+          <div className="number-pairs">
+            <h2>已导入号码字段</h2>
+            <ul>
+              {this.showNumberPairs()}
+            </ul>
+          </div>
+        ) : ''}
+
         <input
           type="text"
           ref="startNumber"
@@ -111,20 +113,10 @@ App = React.createClass({
 
         <span>中间数字长度：{maxLength - this.state.startNumber.length - this.state.endNumber.length}</span>
 
-        <br />
-
-        <button
-          className="generate-numbers"
-          onClick={this.generate}
-          disabled={this.state.startNumber.length < 3 || this.state.endNumber.length < 3}>
-          生成号码
-        </button>
-
-        <br />
-
-        { this.state.isGenerating ?
-          <span>工人正在生成号码，请稍等</span> : this.showNumbers()
-        }
+        {this.numberPairHasBeenExported() ?
+          <span>已导入过该号码组合</span> :
+          <button onClick={this.exportToContacts}>导入到通讯录</button>
+          }
 
 
       </div>
