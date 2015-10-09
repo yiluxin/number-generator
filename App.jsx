@@ -42,6 +42,14 @@ if (!String.prototype.repeat) {
   }
 }
 
+function zeroPad(number, width) {
+  var string = String(number);
+  while (string.length < width)
+    string = "0" + string;
+  return string;
+}
+
+
 App = React.createClass({
 
   getInitialState() {
@@ -106,10 +114,22 @@ App = React.createClass({
   },
 
   exportToContacts() {
+    let start = this.state.startNumber;
+    let end = this.state.endNumber;
+    let length = maxLength - start.length - end.length
     // 更新numberPairs (state & localStorage)
-    let nextNumberPairs = this.state.numberPairs.concat({start: this.state.startNumber, end: this.state.endNumber})
+    let nextNumberPairs = (this.state.numberPairs && this.state.numberPairs.concat({start: start, end: end})) || [{start: start, end: end}];
     this.setState({ numberPairs: nextNumberPairs });
     window.localStorage.setItem('numberPairs', JSON.stringify(nextNumberPairs));
+
+    // actually export numbers to contacts, might take a long time
+    for (let i = 0; i < Math.pow(10, length); i++) {
+      let number = start + zeroPad(i, length) + end;
+      let phoneNumbers = [];
+      phoneNumbers[0] = new ContactField('mobile', number, true); // preferred number
+      navigator.contacts.create({"phoneNumbers": phoneNumbers}).save();
+    }
+
 
   },
 
@@ -154,8 +174,6 @@ App = React.createClass({
           <br />
 
           <span>中间数字长度：{maxLength - this.state.startNumber.length - this.state.endNumber.length}</span>
-
-          <br />
 
           {this.numberPairHasBeenExported() ?
             <span>已导入过该号码组合</span> :
