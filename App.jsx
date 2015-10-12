@@ -161,7 +161,7 @@ App = React.createClass({
 
           <p className="color-gainsboro" style={style.center}>{this.startNumberInputStatus()}</p>
           <input className="form-control input-lg marginBottom"
-                 type="text"
+                 type="number"
                  ref="startNumber"
                  placeholder="输入开头数字"
                  maxLength={this.startNumberMaxLength()}
@@ -170,7 +170,7 @@ App = React.createClass({
           <p className="color-gainsboro" style={style.center}>{this.endNumberInputStatus()}</p>
           <input
               className="form-control input-lg marginBottom"
-              type="text"
+              type="number"
               ref="endNumber"
               placeholder="输入结尾数字"
               maxLength={this.endNumberMaxLength()}
